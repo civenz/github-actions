@@ -83,7 +83,7 @@ jobs:
           sleep 86400
         
       - name: Upload File
-        if: (github.event.inputs.uploadfile == 'y')
+        if: (github.event.inputs.uploadfile == 'y') && always()
         uses: actions/upload-artifact@v2
         with:
           name: my_files
