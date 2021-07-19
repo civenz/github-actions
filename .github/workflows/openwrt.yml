@@ -1,0 +1,92 @@
+name: OpenWrt
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      cmd:
+        description: 'os | ipk | tmate1 | tmate2 | ngrok'
+        required: true
+        default: ''
+      ngrok_token:
+        description: 'ngrok token'
+        required: false
+        default: ''
+      ngrok_ssh_pwd:
+        description: 'ngrok ssh login password'
+        required: false
+        default: ''
+      uploadfile:
+        description: 'Upload File: y/n'
+        required: false
+        default: ''
+
+
+permissions: write-all
+
+env:
+  INIT_RUN: false
+  REPO_URL: https://git.openwrt.org/openwrt/openwrt.git
+
+
+jobs:
+  tmate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: INIT
+        run: |
+          sudo mkdir -p /openwrt
+          sudo chown $USER:$GROUPS /openwrt
+          ln -sf /openwrt $GITHUB_WORKSPACE
+          
+      - name: OpenWrt OS x86_64 make
+        if: (github.event.inputs.cmd == 'os')
+        working-directory: /openwrt
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/civenz/github-actions/main/shell/openwrt-os-x86_64.sh -o run.sh
+          sh run.sh
+          
+      - name: OpenWrt ipk x86_64 make
+        if: (github.event.inputs.cmd == 'ipk')
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/civenz/github-actions/main/shell/openwrt-ipk-x86_64.sh -o run.sh
+          sudo chmod +x run.sh && ./run.sh
+
+      - name: tmate1 - ssh
+        if: (github.event.inputs.cmd == 'tmate1')
+        uses: csexton/debugger-action@master
+
+      - name: tmate2 - ssh
+        if: (github.event.inputs.cmd == 'tmate2')
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 14400
+
+      - name: ngrok - ssh
+        if: (github.event.inputs.cmd == 'ngrok')
+        env:
+          ### https://dashboard.ngrok.com/get-started/your-authtoken # GET NGROK TOKEN
+          NGROK_TOKEN:  ${{ github.event.inputs.ngrok_token }}
+          ### https://ngrok.com/docs#global-locations # NGROK SERVER REGION [us, eu, au, ap, sa, jp, in]
+          NGROK_REGION: ap
+          ### SSH 登录密码
+          SSH_PASSWORD: ${{ github.event.inputs.ngrok_ssh_pwd }}
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/civenz/github-actions/main/shell/github-actions-ngrok.sh -o ngrok.sh
+          chmod +x ngrok.sh && ./ngrok.sh
+        shell: bash
+        
+      - name: ngrok - sleep
+        if: (github.event.inputs.cmd == 'ngrok')
+        run: |
+          sleep 86400
+        
+      - name: Upload File
+        if: (github.event.inputs.uploadfile == 'y')
+        uses: actions/upload-artifact@v2
+        with:
+          name: my_files
+          path: my_files.tar.gz
+          
+      - name: Done
+        run: echo "Done!"
