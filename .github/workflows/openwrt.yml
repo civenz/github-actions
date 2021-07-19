@@ -73,6 +73,7 @@ jobs:
           SSH_PASSWORD: ${{ github.event.inputs.ngrok_ssh_pwd }}
         run: |
           curl -fsSL https://raw.githubusercontent.com/civenz/github-actions/main/shell/github-actions-ngrok.sh -o ngrok.sh
+          sudo chmod 777 ngrok.sh
           ./ngrok.sh
         shell: bash
         
