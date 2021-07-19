@@ -21,7 +21,6 @@ mkdir cmake
 sh cmake.sh --skip-license --prefix="./cmake"
 sudo ln -sf cmake/bin/cmake /usr/bin/cmake
 
-mkdir openwrt
 git clone $REPO_URL -b $REPO_BRANCH openwrt
 cd openwrt
 
@@ -57,7 +56,11 @@ CONFIG_TARGET_x86_64_DEVICE_generic=y
 CONFIG_TARGET_KERNEL_PARTSIZE=256
 CONFIG_TARGET_ROOTFS_PARTSIZE=2048
 EOF
+
+sed -i 's/192.168.1.1/192.168.1.2/g' ./package/base-files/files/bin/config_generate
 ################################################################################
+
+
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
@@ -68,4 +71,4 @@ find dl -size -1024c -exec rm -f {} \;
 make $MAKE_PARAM
 
 cd ..
-tar -czvf my_files.tar.gz  ./openwrt/bin
+tar -czvf my_files.tar.gz openwrt/bin/targets/x86/64/
