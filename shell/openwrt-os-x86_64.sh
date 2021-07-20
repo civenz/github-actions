@@ -3,7 +3,7 @@
 REPO_URL=https://git.openwrt.org/openwrt/openwrt.git
 #REPO_URL=https://gitee.com/civenz/openwrt.git
 REPO_BRANCH=openwrt-21.02
-MAKE_PARAM="-j8 V=s"
+MAKE_PARAM="-j8"
 
 sudo apt update && sudo apt install build-essential ccache ecj fastjar file g++ gawk \
 gettext git java-propose-classpath libelf-dev libncurses5-dev \
