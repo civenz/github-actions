@@ -63,7 +63,7 @@ jobs:
         timeout-minutes: 14400
 
       - name: ngrok - ssh
-        if: (github.event.inputs.cmd == 'ngrok' || github.event.inputs.cmd == 'os') && always()
+        if: (github.event.inputs.cmd == 'ngrok' || github.event.inputs.cmd == 'test') && always()
         env:
           ### https://dashboard.ngrok.com/get-started/your-authtoken # GET NGROK TOKEN
           NGROK_TOKEN:  ${{ github.event.inputs.ngrok_token }}
@@ -78,7 +78,7 @@ jobs:
         shell: bash
         
       - name: ngrok - sleep
-        if: (github.event.inputs.cmd == 'ngrok' || github.event.inputs.cmd == 'os') && always()
+        if: (github.event.inputs.cmd == 'ngrok' || github.event.inputs.cmd == 'test') && always()
         run: |
           sleep 86400
         
