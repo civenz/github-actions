@@ -71,4 +71,4 @@ find dl -size -1024c -exec rm -f {} \;
 make $MAKE_PARAM
 
 cd ..
-tar -czvf my_files.tar.gz ./openwrt/bin/*
+tar -czvf my_files.tar.gz ./openwrt/bin/targets/*
