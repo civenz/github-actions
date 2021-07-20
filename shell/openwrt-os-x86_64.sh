@@ -72,3 +72,4 @@ make $MAKE_PARAM
 
 cd ..
 tar -czvf my_files.tar.gz ./openwrt/bin/targets/*
+cp my_files.tar.gz ../my_files.tar.gz
