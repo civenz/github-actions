@@ -46,6 +46,7 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/civenz/github-actions/main/shell/openwrt-os-x86_64.sh -o run.sh
           sh run.sh
+          ls -lah openwrt/bin/targets/x86/64/
           
       - name: OpenWrt ipk x86_64 make
         if: (github.event.inputs.cmd == 'ipk')
