@@ -108,7 +108,5 @@ make $MAKE_PARAM
 cd ..
 tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-x86-64-generic-ext4-combined-efi.img.gz
 
-tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ \
-	openwrt-x86-64-generic-ext4-combined-efi.img.gz \
-	openwrt-sdk-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz \
-	openwrt-imagebuilder-x86-64.Linux-x86_64.tar.xz
+tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-x86-64-generic-ext4-combined-efi.img.gz
+cp ./openwrt/bin/targets/x86/64/openwrt-sdk-*-x86_64.tar.xz ./
