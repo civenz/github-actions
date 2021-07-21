@@ -30,7 +30,7 @@ env:
 
 
 jobs:
-  tmate:
+  OpenWrt:
     runs-on: ubuntu-latest
 
     steps:
