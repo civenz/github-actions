@@ -34,7 +34,10 @@ if [ $REPO_TAG != 'last' ]; then
     git checkout tags/$REPO_TAG
 fi
 
-git branch
+#git checkout $REPO_BRANCH
+#git checkout tags/$REPO_TAG
+#git tag
+git branch -a
 
 ################################################################################
 #### 这里插入第三方包到 openwrt/package 目录
@@ -63,19 +66,8 @@ CONFIG_TARGET_x86_64=y
 CONFIG_TARGET_MULTI_PROFILE=y
 CONFIG_TARGET_DEVICE_x86_64_DEVICE_generic=y
 CONFIG_TARGET_DEVICE_PACKAGES_x86_64_DEVICE_generic=""
-CONFIG_ALL_KMODS=y
-CONFIG_ALL_NONSHARED=y
-CONFIG_DEVEL=y
-CONFIG_TARGET_PER_DEVICE_ROOTFS=y
-CONFIG_AUTOREMOVE=y
-CONFIG_BUILDBOT=y
-CONFIG_COLLECT_KERNEL_DEBUG=y
-CONFIG_IB=y
-CONFIG_IMAGEOPT=y
-CONFIG_JSON_OVERVIEW_IMAGE_INFO=y
-CONFIG_KERNEL_BUILD_DOMAIN="buildhost"
-CONFIG_KERNEL_BUILD_USER="builder"
-# CONFIG_KERNEL_KALLSYMS is not set
+CONFIG_IB=n
+CONFIG_SDK=n
 CONFIG_PACKAGE_cgi-io=y
 CONFIG_PACKAGE_libiwinfo=y
 CONFIG_PACKAGE_libiwinfo-lua=y
@@ -108,23 +100,18 @@ CONFIG_PACKAGE_rpcd-mod-luci=y
 CONFIG_PACKAGE_rpcd-mod-rrdns=y
 CONFIG_PACKAGE_uhttpd=y
 CONFIG_PACKAGE_uhttpd-mod-ubus=y
-CONFIG_REPRODUCIBLE_DEBUG_INFO=y
-CONFIG_SDK=y
-CONFIG_TARGET_ALL_PROFILES=y
-CONFIG_VERSIONOPT=y
-CONFIG_VERSION_BUG_URL=""
-CONFIG_VERSION_CODE=""
-CONFIG_VERSION_DIST="OpenWrt"
-CONFIG_VERSION_FILENAMES=y
-CONFIG_VERSION_HOME_URL=""
-CONFIG_VERSION_HWREV=""
-CONFIG_VERSION_MANUFACTURER=""
-CONFIG_VERSION_MANUFACTURER_URL=""
-CONFIG_VERSION_NUMBER=""
-CONFIG_VERSION_PRODUCT=""
-# VERSION REPO - https://downloads.openwrt.org/
-CONFIG_VERSION_REPO=""
-CONFIG_VERSION_SUPPORT_URL=""
+## civen add
+CONFIG_PACKAGE_dnsmasq=n
+CONFIG_PACKAGE_dnsmasq-full=y
+CONFIG_PACKAGE_ipset=y
+CONFIG_PACKAGE_block-mount=y
+CONFIG_PACKAGE_fdisk=y
+CONFIG_PACKAGE_lsblk=y
+CONFIG_PACKAGE_e2fsprogs=y
+CONFIG_PACKAGE_f2fs-tools=y
+CONFIG_PACKAGE_resize2fs=y
+CONFIG_PACKAGE_tune2fs=y
+CONFIG_PACKAGE_eject=y
 EOF
 
 sed -i 's/192.168.1.1/192.168.1.2/g' ./package/base-files/files/bin/config_generate
@@ -138,7 +125,7 @@ find dl -size -1024c -exec ls -l {} \;
 find dl -size -1024c -exec rm -f {} \;
 make $MAKE_PARAM
 
-git branch
+git branch -a
 
 cd ..
 ls -lah ./openwrt/bin/targets/x86/64/
