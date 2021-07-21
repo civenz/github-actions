@@ -3,6 +3,7 @@
 REPO_URL=https://git.openwrt.org/openwrt/openwrt.git
 #REPO_URL=https://gitee.com/civenz/openwrt.git
 REPO_BRANCH=openwrt-21.02
+REPO_TAG=v21.02.0-rc3
 MAKE_PARAM="-j8"
 
 sudo apt update && sudo apt install build-essential ccache ecj fastjar file g++ gawk \
@@ -23,6 +24,7 @@ sudo ln -sf cmake/bin/cmake /usr/bin/cmake
 
 git clone $REPO_URL -b $REPO_BRANCH openwrt
 cd openwrt
+git checkout tags/$REPO_TAG
 
 ################################################################################
 #### 这里插入第三方包到 openwrt/package 目录
@@ -107,7 +109,4 @@ find dl -size -1024c -exec rm -f {} \;
 make $MAKE_PARAM
 
 cd ..
-tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-x86-64-generic-ext4-combined-efi.img.gz
-
-tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-x86-64-generic-ext4-combined-efi.img.gz
-cp ./openwrt/bin/targets/x86/64/openwrt-sdk-*-x86_64.tar.xz ./
+tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-*-ext4-combined-efi.img.gz
