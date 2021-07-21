@@ -1,28 +1,31 @@
 #!/bin/bash
 
-REPO_URL=https://git.openwrt.org/openwrt/openwrt.git
-#REPO_URL=https://gitee.com/civenz/openwrt.git
-REPO_BRANCH=openwrt-21.02
-### last or release tag
-REPO_TAG=v21.02.0-rc3
-CUSTOM_FEEDS="y"
+REPO_URL="https://git.openwrt.org/openwrt/openwrt.git"
+#REPO_URL="https://gitee.com/civenz/openwrt.git"
+REPO_BRANCH="openwrt-21.02"
+### last or release tag: v21.02.0-rc3
+REPO_TAG="v21.02.0-rc3"
 MAKE_PARAM="-j8"
+CUSTOM_FEEDS="n"
+DEPENDS="n"
 
-sudo apt update && sudo apt install build-essential ccache ecj fastjar file g++ gawk \
-gettext git java-propose-classpath libelf-dev libncurses5-dev \
-libncursesw5-dev libssl-dev python python2.7-dev python3 unzip wget \
-python3-distutils python3-setuptools rsync subversion swig time \
-xsltproc zlib1g-dev re2c curl \
-asciidoc binutils bzip2 libz-dev patch lib32gcc1 libc6-dev-i386 \
-flex uglifyjs gcc-multilib p7zip p7zip-full msmtp texinfo libglib2.0-dev \
-xmlto qemu-utils upx  autoconf automake libtool autopoint device-tree-compiler \
-g++-multilib antlr3 gperf
+if [ $DEPENDS == 'y' ]; then
+    #apt install build-essential ccache ecj fastjar file g++ gawk \
+    sudo apt update && sudo apt install build-essential ccache ecj fastjar file g++ gawk \
+    gettext git java-propose-classpath libelf-dev libncurses5-dev \
+    libncursesw5-dev libssl-dev python python2.7-dev python3 unzip wget \
+    python3-distutils python3-setuptools rsync subversion swig time \
+    xsltproc zlib1g-dev re2c curl \
+    asciidoc binutils bzip2 libz-dev patch lib32gcc1 libc6-dev-i386 \
+    flex uglifyjs gcc-multilib p7zip p7zip-full msmtp texinfo libglib2.0-dev \
+    xmlto qemu-utils upx  autoconf automake libtool autopoint device-tree-compiler \
+    g++-multilib antlr3 gperf
 
-
-curl -fsSL https://github.com/Kitware/CMake/releases/download/v3.21.0-rc3/cmake-3.21.0-rc3-linux-x86_64.sh -o cmake.sh
-mkdir cmake
-sh cmake.sh --skip-license --prefix="./cmake"
-sudo ln -sf cmake/bin/cmake /usr/bin/cmake
+    curl -fsSL https://github.com/Kitware/CMake/releases/download/v3.21.0-rc3/cmake-3.21.0-rc3-linux-x86_64.sh -o cmake.sh
+    mkdir cmake
+    sh cmake.sh --skip-license --prefix="./cmake"
+    sudo ln -sf cmake/bin/cmake /usr/bin/cmake
+fi
 
 git clone $REPO_URL -b $REPO_BRANCH openwrt
 cd openwrt
@@ -31,6 +34,7 @@ if [ $REPO_TAG != 'last' ]; then
     git checkout tags/$REPO_TAG
 fi
 
+git branch
 
 ################################################################################
 #### 这里插入第三方包到 openwrt/package 目录
@@ -52,13 +56,25 @@ fi
 #### 自定义编译配置文件
 cat /dev/null > .config
 cat << EOF >> .config
+#CONFIG_TARGET_KERNEL_PARTSIZE=16
+#CONFIG_TARGET_ROOTFS_PARTSIZE=100
 CONFIG_TARGET_x86=y
 CONFIG_TARGET_x86_64=y
-CONFIG_TARGET_x86_64_DEVICE_generic=y
-CONFIG_TARGET_KERNEL_PARTSIZE=16
-CONFIG_TARGET_ROOTFS_PARTSIZE=100
-CONFIG_SDK=y
+CONFIG_TARGET_MULTI_PROFILE=y
+CONFIG_TARGET_DEVICE_x86_64_DEVICE_generic=y
+CONFIG_TARGET_DEVICE_PACKAGES_x86_64_DEVICE_generic=""
 CONFIG_ALL_KMODS=y
+CONFIG_ALL_NONSHARED=y
+CONFIG_DEVEL=y
+CONFIG_TARGET_PER_DEVICE_ROOTFS=y
+CONFIG_AUTOREMOVE=y
+CONFIG_BUILDBOT=y
+CONFIG_COLLECT_KERNEL_DEBUG=y
+CONFIG_IB=y
+CONFIG_IMAGEOPT=y
+CONFIG_JSON_OVERVIEW_IMAGE_INFO=y
+CONFIG_KERNEL_BUILD_DOMAIN="buildhost"
+CONFIG_KERNEL_BUILD_USER="builder"
 # CONFIG_KERNEL_KALLSYMS is not set
 CONFIG_PACKAGE_cgi-io=y
 CONFIG_PACKAGE_libiwinfo=y
@@ -92,21 +108,42 @@ CONFIG_PACKAGE_rpcd-mod-luci=y
 CONFIG_PACKAGE_rpcd-mod-rrdns=y
 CONFIG_PACKAGE_uhttpd=y
 CONFIG_PACKAGE_uhttpd-mod-ubus=y
-
+CONFIG_REPRODUCIBLE_DEBUG_INFO=y
+CONFIG_SDK=y
+CONFIG_TARGET_ALL_PROFILES=y
+CONFIG_VERSIONOPT=y
+CONFIG_VERSION_BUG_URL=""
+CONFIG_VERSION_CODE=""
+CONFIG_VERSION_DIST="OpenWrt"
+CONFIG_VERSION_FILENAMES=y
+CONFIG_VERSION_HOME_URL=""
+CONFIG_VERSION_HWREV=""
+CONFIG_VERSION_MANUFACTURER=""
+CONFIG_VERSION_MANUFACTURER_URL=""
+CONFIG_VERSION_NUMBER=""
+CONFIG_VERSION_PRODUCT=""
+# VERSION REPO - https://downloads.openwrt.org/
+CONFIG_VERSION_REPO=""
+CONFIG_VERSION_SUPPORT_URL=""
 EOF
 
 sed -i 's/192.168.1.1/192.168.1.2/g' ./package/base-files/files/bin/config_generate
 ################################################################################
 
-
-
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-make defconfig					#make menuconfig
+make defconfig                      #make menuconfig
 make download -j8
 find dl -size -1024c -exec ls -l {} \;
 find dl -size -1024c -exec rm -f {} \;
 make $MAKE_PARAM
 
+git branch
+
 cd ..
-tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-x86-64-generic-ext4-combined-efi.img.gz
+ls -lah ./openwrt/bin/targets/x86/64/
+
+tar -czvf my_files.tar.gz -C ./openwrt/ .config
+
+### openwrt/bin/targets/x86/64/openwrt-x86-64-generic-ext4-combined-efi.img.gz
+### openwrt/bin/targets/x86/64/openwrt-sdk-*.tar.xz
