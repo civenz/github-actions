@@ -3,7 +3,9 @@
 REPO_URL=https://git.openwrt.org/openwrt/openwrt.git
 #REPO_URL=https://gitee.com/civenz/openwrt.git
 REPO_BRANCH=openwrt-21.02
+### last or release tag
 REPO_TAG=v21.02.0-rc3
+CUSTOM_FEEDS="y"
 MAKE_PARAM="-j8"
 
 sudo apt update && sudo apt install build-essential ccache ecj fastjar file g++ gawk \
@@ -24,27 +26,25 @@ sudo ln -sf cmake/bin/cmake /usr/bin/cmake
 
 git clone $REPO_URL -b $REPO_BRANCH openwrt
 cd openwrt
-git checkout tags/$REPO_TAG
+
+if [ $REPO_TAG != 'last' ]; then
+    git checkout tags/$REPO_TAG
+fi
+
 
 ################################################################################
 #### 这里插入第三方包到 openwrt/package 目录
-#cat /dev/null > feeds.conf.default
-#cat << EOF >> feeds.conf.default
-#src-git packages https://gitee.com/civenz/openwrt-feed-packages.git
-#src-git luci https://gitee.com/civenz/openwrt-project-luci.git
-#src-git routing https://gitee.com/civenz/openwrt-feed-routing.git
-#src-git telephony https://gitee.com/civenz/openwrt-feed-telephony.git
-## 
-##src-git packages https://git.openwrt.org/feed/packages.git
-##src-git luci https://git.openwrt.org/project/luci.git
-##src-git routing https://git.openwrt.org/feed/routing.git
-##src-git telephony https://git.openwrt.org/feed/telephony.git
-## 
-##src-git video https://github.com/openwrt/video.git
-##src-git targets https://github.com/openwrt/targets.git
-##src-git oldpackages http://git.openwrt.org/packages.git
-##src-link custom /usr/src/openwrt/custom-feed
-#EOF
+if [ $CUSTOM_FEEDS == 'y' ]; then
+cat /dev/null > feeds.conf.default
+cat << EOF >> feeds.conf.default
+src-git packages https://gitee.com/civenz/openwrt-feed-packages.git
+src-git luci https://gitee.com/civenz/openwrt-project-luci.git
+src-git routing https://gitee.com/civenz/openwrt-feed-routing.git
+src-git telephony https://gitee.com/civenz/openwrt-feed-telephony.git
+# 
+#src-link custom /usr/src/openwrt/custom-feed
+EOF
+fi
 ################################################################################
 
 
@@ -58,7 +58,7 @@ CONFIG_TARGET_x86_64_DEVICE_generic=y
 CONFIG_TARGET_KERNEL_PARTSIZE=16
 CONFIG_TARGET_ROOTFS_PARTSIZE=100
 CONFIG_SDK=y
-
+CONFIG_ALL_KMODS=y
 # CONFIG_KERNEL_KALLSYMS is not set
 CONFIG_PACKAGE_cgi-io=y
 CONFIG_PACKAGE_libiwinfo=y
