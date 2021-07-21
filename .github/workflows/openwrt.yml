@@ -88,6 +88,14 @@ jobs:
         with:
           name: my_files
           path: my_files.tar.gz
+         
+        
+      - name: OpenWrt Upload SDK
+        if: (github.event.inputs.cmd == 'os' && github.event.inputs.uploadfile == 'y') && always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: openwrt-sdk
+          path: openwrt/bin/targets/x86/64/openwrt-sdk-*.tar.xz
           
       - name: Done
         run: echo "Done!"
