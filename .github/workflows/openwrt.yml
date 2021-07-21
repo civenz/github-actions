@@ -21,13 +21,11 @@ on:
         required: false
         default: ''
 
-
 permissions: write-all
 
 env:
   INIT_RUN: false
   REPO_URL: https://git.openwrt.org/openwrt/openwrt.git
-
 
 jobs:
   OpenWrt:
@@ -39,7 +37,7 @@ jobs:
           sudo mkdir -p /openwrt
           sudo chown $USER:$GROUPS /openwrt
           ln -sf /openwrt $GITHUB_WORKSPACE
-          
+
       - name: OpenWrt OS x86_64 make
         if: (github.event.inputs.cmd == 'os')
         #working-directory: /openwrt
@@ -77,7 +75,7 @@ jobs:
           sudo chmod 777 ngrok.sh
           ./ngrok.sh
         shell: bash
-        
+
       - name: ngrok - sleep
         if: (github.event.inputs.cmd == 'ngrok' || github.event.inputs.cmd == 'test') && always()
         run: |
@@ -89,16 +87,13 @@ jobs:
         with:
           name: my_files
           path: my_files.tar.gz
-         
-        
-      - name: OpenWrt Upload SDK
+
+      - name: OpenWrt Upload OS IMAGE
         if: (github.event.inputs.cmd == 'os' && github.event.inputs.uploadfile == 'y') && always()
         uses: actions/upload-artifact@v2
         with:
-          name: openwrt-sdk
-          path: |
-            openwrt/bin/targets/x86/64/openwrt-*-ext4-combined-efi.img.gz
-            openwrt/bin/targets/x86/64/openwrt-sdk-*.tar.xz
-          
+          name: openwrt
+          path: openwrt/bin/targets/x86/64/openwrt-*-ext4-combined-efi.img.gz
+
       - name: Done
         run: echo "Done!"
