@@ -109,4 +109,4 @@ find dl -size -1024c -exec rm -f {} \;
 make $MAKE_PARAM
 
 cd ..
-tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-*-ext4-combined-efi.img.gz
+tar -czvf my_files.tar.gz -C ./openwrt/bin/targets/x86/64/ openwrt-x86-64-generic-ext4-combined-efi.img.gz
