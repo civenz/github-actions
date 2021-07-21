@@ -96,7 +96,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: openwrt-sdk
-          path: openwrt/bin/targets/x86/64/openwrt-sdk-*.tar.xz
+          path: |
+            openwrt/bin/targets/x86/64/openwrt-*-ext4-combined-efi.img.gz
+            openwrt/bin/targets/x86/64/openwrt-sdk-*.tar.xz
           
       - name: Done
         run: echo "Done!"
