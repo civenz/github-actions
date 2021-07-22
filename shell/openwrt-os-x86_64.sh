@@ -138,7 +138,6 @@ CONFIG_PACKAGE_resize2fs=y
 CONFIG_PACKAGE_tune2fs=y
 CONFIG_PACKAGE_eject=y
 CONFIG_TARGET_ALL_PROFILES=y
-CONFIG_TARGET_PREINIT_IP="192.168.1.2"
 ## VERSION INFO
 #CONFIG_VERSIONOPT=y
 #CONFIG_VERSION_BUG_URL=""
@@ -155,7 +154,7 @@ CONFIG_TARGET_PREINIT_IP="192.168.1.2"
 #CONFIG_VERSION_SUPPORT_URL=""
 EOF
 
-#sed -i 's/192.168.1.1/192.168.1.2/g' ./package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.1.2/g' ./package/base-files/files/bin/config_generate
 ################################################################################
 
 ./scripts/feeds update -a
