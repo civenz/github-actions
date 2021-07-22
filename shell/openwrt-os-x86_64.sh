@@ -4,7 +4,7 @@ REPO_URL="https://git.openwrt.org/openwrt/openwrt.git"
 #REPO_URL="https://gitee.com/civenz/openwrt.git"
 REPO_BRANCH="openwrt-21.02"
 ### last or release tag: v21.02.0-rc3
-REPO_TAG="v21.02.0-rc3"
+REPO_OBJ="2bc192c3f46dadc7cfbcd7e1ad62b1a34d6aca10"
 MAKE_PARAM="-j8"
 CUSTOM_FEEDS="n"
 DEPENDS="n"
@@ -30,13 +30,11 @@ fi
 git clone $REPO_URL -b $REPO_BRANCH openwrt
 cd openwrt
 
-if [ $REPO_TAG != 'last' ]; then
-    git checkout tags/$REPO_TAG
+if [ $REPO_OBJ != 'last' ]; then
+    git checkout $REPO_OBJ
 fi
 
 #git checkout $REPO_BRANCH
-#git checkout tags/$REPO_TAG
-#git tag
 git branch -a
 
 ################################################################################
@@ -57,17 +55,44 @@ fi
 
 ################################################################################
 #### 自定义编译配置文件
+#### https://downloads.openwrt.org/releases/21.02.0-rc3/targets/x86/64/config.buildinfo
 cat /dev/null > .config
 cat << EOF >> .config
-#CONFIG_TARGET_KERNEL_PARTSIZE=16
-#CONFIG_TARGET_ROOTFS_PARTSIZE=100
 CONFIG_TARGET_x86=y
 CONFIG_TARGET_x86_64=y
 CONFIG_TARGET_MULTI_PROFILE=y
 CONFIG_TARGET_DEVICE_x86_64_DEVICE_generic=y
 CONFIG_TARGET_DEVICE_PACKAGES_x86_64_DEVICE_generic=""
+
 CONFIG_IB=n
 CONFIG_SDK=n
+
+# Root filesystem images
+CONFIG_TARGET_ROOTFS_EXT4FS=y
+CONFIG_TARGET_EXT4_RESERVED_PCT=0
+CONFIG_TARGET_EXT4_BLOCKSIZE_4K=y
+CONFIG_TARGET_EXT4_BLOCKSIZE=4096
+CONFIG_TARGET_EXT4_JOURNAL=y
+CONFIG_TARGET_ROOTFS_SQUASHFS=n
+CONFIG_TARGET_UBIFS_FREE_SPACE_FIXUP=y
+CONFIG_TARGET_UBIFS_JOURNAL_SIZE=""
+CONFIG_GRUB_IMAGES=n
+CONFIG_GRUB_EFI_IMAGES=y
+CONFIG_GRUB_CONSOLE=y
+CONFIG_GRUB_SERIAL="ttyS0"
+CONFIG_GRUB_BAUDRATE=115200
+CONFIG_GRUB_FLOWCONTROL=n
+CONFIG_GRUB_BOOTOPTS=""
+CONFIG_GRUB_TIMEOUT="1"
+CONFIG_GRUB_TITLE="OpenWrt"
+CONFIG_ISO_IMAGES=n
+CONFIG_VDI_IMAGES=n
+CONFIG_VMDK_IMAGES=n
+CONFIG_TARGET_IMAGES_GZIP=y
+#CONFIG_TARGET_KERNEL_PARTSIZE=16
+#CONFIG_TARGET_ROOTFS_PARTSIZE=100
+
+# CONFIG_KERNEL_KALLSYMS is not set
 CONFIG_PACKAGE_cgi-io=y
 CONFIG_PACKAGE_libiwinfo=y
 CONFIG_PACKAGE_libiwinfo-lua=y
@@ -112,9 +137,25 @@ CONFIG_PACKAGE_f2fs-tools=y
 CONFIG_PACKAGE_resize2fs=y
 CONFIG_PACKAGE_tune2fs=y
 CONFIG_PACKAGE_eject=y
+CONFIG_TARGET_ALL_PROFILES=y
+CONFIG_TARGET_PREINIT_IP="192.168.1.2"
+## VERSION INFO
+#CONFIG_VERSIONOPT=y
+#CONFIG_VERSION_BUG_URL=""
+#CONFIG_VERSION_CODE=""
+#CONFIG_VERSION_DIST="OpenWrt"
+#CONFIG_VERSION_FILENAMES=y
+#CONFIG_VERSION_HOME_URL=""
+#CONFIG_VERSION_HWREV=""
+#CONFIG_VERSION_MANUFACTURER=""
+#CONFIG_VERSION_MANUFACTURER_URL=""
+#CONFIG_VERSION_NUMBER=""
+#CONFIG_VERSION_PRODUCT=""
+#CONFIG_VERSION_REPO="https://downloads.openwrt.org/releases/21.02.0-rc3"
+#CONFIG_VERSION_SUPPORT_URL=""
 EOF
 
-sed -i 's/192.168.1.1/192.168.1.2/g' ./package/base-files/files/bin/config_generate
+#sed -i 's/192.168.1.1/192.168.1.2/g' ./package/base-files/files/bin/config_generate
 ################################################################################
 
 ./scripts/feeds update -a
